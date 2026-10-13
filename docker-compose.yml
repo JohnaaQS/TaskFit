@@ -9,6 +9,21 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U klus -d klusplatform"]
+      interval: 5s
+      retries: 10
+
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/klusplatform
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   pgdata:
