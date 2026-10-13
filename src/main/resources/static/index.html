@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TaskFit</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <style>
+        body { font-family: system-ui, sans-serif; background: #0f172a; color: #f1f5f9; margin: 0; padding: 2rem; }
+        h1 { color: #38bdf8; }
+        ul { padding-left: 1.2rem; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script>
+        // Simpele React-app zonder build tooling: React.createElement in plaats van JSX.
+        const { useState, useEffect } = React;
+
+        function App() {
+            const [freelancers, setFreelancers] = useState([]);
+            const [error, setError] = useState(null);
+
+            useEffect(() => {
+                fetch('/api/freelancers')
+                    .then(res => res.json())
+                    .then(setFreelancers)
+                    .catch(() => setError('Kon de API nog niet bereiken.'));
+            }, []);
+
+            return React.createElement('div', null,
+                React.createElement('h1', null, 'TaskFit'),
+                React.createElement('p', null, 'Freelancer and client marketplace with a matching engine.'),
+                error
+                    ? React.createElement('p', null, error)
+                    : React.createElement('ul', null,
+                        freelancers.map(f => React.createElement('li', { key: f.id }, f.name + ' (' + f.email + ')'))
+                      )
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+    </script>
+</body>
+</html>
